@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Advanced Android Sample App
 ===================================
 
@@ -50,3 +51,7 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
 License for the specific language governing permissions and limitations under
 the License.
 
+=======
+# nano-make-material
+[Android Nano Degree] - Project 5: Make Your App Material
+>>>>>>> fa6651ada36638e2f14a42c5b6689422c5ef6e05
