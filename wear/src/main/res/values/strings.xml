@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Sunshine Wear</string>
-    <string name="hello_world">Hello World!</string>
+    <string name="wear_name">Wear Clock</string>
 </resources>

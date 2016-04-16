@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="icon_size">24dp</dimen>
+
+    <dimen name="clock_text_size">40dp</dimen>
+    <dimen name="clock_text_size_round">45dp</dimen>
+    <dimen name="clock_offset_x">15dp</dimen>
+    <dimen name="clock_offset_x_round">50dp</dimen>
+    <dimen name="clock_offset_y">90dp</dimen>
+
+    <dimen name="round_size_text_date">20dp</dimen>
+    <dimen name="round_size_text_high_temp">25dp</dimen>
+    <dimen name="round_size_text_low_temp">25dp</dimen>
+    <dimen name="round_offset_date_x">30dp</dimen>
+    <dimen name="round_offset_line_x">90dp</dimen>
+
+    <dimen name="square_size_text_date">20dp</dimen>
+    <dimen name="square_size_text_high_temp">25dp</dimen>
+    <dimen name="square_size_text_low_temp">25dp</dimen>
+    <dimen name="square_offset_date_x">20dp</dimen>
+    <dimen name="square_offset_line_x">75dp</dimen>
+
+    <dimen name="offset_date_y">115dp</dimen>
+    <dimen name="offset_line_y">130dp</dimen>
+    <dimen name="offset_current_weather_y">170dp</dimen>
+
+</resources>
