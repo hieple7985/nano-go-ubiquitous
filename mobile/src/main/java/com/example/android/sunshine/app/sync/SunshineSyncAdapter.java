@@ -71,6 +71,12 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             WeatherContract.WeatherEntry.COLUMN_SHORT_DESC
     };
 
+    private static final String[] WEARABLE_WEATHER_PROJECTION = new String[] {
+            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
+            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
+            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP
+    };
+
     // these indices must match the projection
     private static final int INDEX_WEATHER_ID = 0;
     private static final int INDEX_MAX_TEMP = 1;
@@ -94,7 +100,13 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.d(LOG_TAG, "Starting sync");
-        String locationQuery = Utility.getPreferredLocation(getContext());
+
+        // We no longer need just the location String, but also potentially the latitude and
+        // longitude, in case we are syncing based on a new Place Picker API result.
+        Context context = getContext();
+        String locationQuery = Utility.getPreferredLocation(context);
+        String locationLatitude = String.valueOf(Utility.getLocationLatitude(context));
+        String locationLongitude = String.valueOf(Utility.getLocationLongitude(context));
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -115,14 +127,29 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             final String FORECAST_BASE_URL =
                     "http://api.openweathermap.org/data/2.5/forecast/daily?";
             final String QUERY_PARAM = "q";
+            final String LAT_PARAM = "lat";
+            final String LON_PARAM = "lon";
             final String FORMAT_PARAM = "mode";
             final String UNITS_PARAM = "units";
             final String DAYS_PARAM = "cnt";
             final String APPID_PARAM = "APPID";
 
-            Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                    .appendQueryParameter(QUERY_PARAM, locationQuery)
-                    .appendQueryParameter(FORMAT_PARAM, format)
+            Uri.Builder uriBuilder = Uri.parse(FORECAST_BASE_URL).buildUpon();
+
+            // Instead of always building the query based off of the location string, we want to
+            // potentially build a query using a lat/lon value. This will be the case when we are
+            // syncing based off of a new location from the Place Picker API. So we need to check
+            // if we have a lat/lon to work with, and use those when we do. Otherwise, the weather
+            // service may not understand the location address provided by the Place Picker API
+            // and the user could end up with no weather! The horror!
+            if (Utility.isLocationLatLonAvailable(context)) {
+                uriBuilder.appendQueryParameter(LAT_PARAM, locationLatitude)
+                        .appendQueryParameter(LON_PARAM, locationLongitude);
+            } else {
+                uriBuilder.appendQueryParameter(QUERY_PARAM, locationQuery);
+            }
+
+            Uri builtUri = uriBuilder.appendQueryParameter(FORMAT_PARAM, format)
                     .appendQueryParameter(UNITS_PARAM, units)
                     .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
                     .appendQueryParameter(APPID_PARAM, BuildConfig.OPEN_WEATHER_MAP_API_KEY)
@@ -230,6 +257,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
         try {
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
+            Context context = getContext();
 
             // do we have an error?
             if ( forecastJson.has(OWM_MESSAGE_CODE) ) {
